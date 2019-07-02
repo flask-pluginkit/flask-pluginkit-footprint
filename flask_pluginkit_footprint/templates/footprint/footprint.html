@@ -194,7 +194,7 @@
                             <input type="text" class="form-control" id="mf_love_name" required>
                         </div>
                         <div class="checkbox">
-                            <label><input type="checkbox" id="my_love_name_shorturl" checked> 生成短网址</label>
+                            <label><input type="checkbox" id="my_love_name_shorturl"> 生成短网址</label>
                         </div>
                     </form>
                     <div id="mp_love_modal_tip"></div>
@@ -360,11 +360,6 @@
                 }]
             };
         }
-
-        //隐藏生成专属页面的modal后将提示清空
-        $('#mp_love_modal').on('hidden.bs.modal', function (e) {
-            $('#mp_love_modal_tip').html('');
-        });
 
         $.extend(FootPrint.prototype, {
             bindEvent: function () {

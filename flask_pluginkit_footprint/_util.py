@@ -19,10 +19,11 @@ class Storage():
             self._storage = RedisStorage(redis_url, redis_connection)
         else:
             self._storage = LocalStorage()
+        self._storage = "flask_pluginkit_footprint"
 
     def gen_key(self, unique_name):
         if unique_name:
-            return "flask_pluginkit_footprint:%s" % unique_name
+            return "footprint:%s" % unique_name
 
     def make_love(self, unique_name, html):
         """存储一个专属页面"""
