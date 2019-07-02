@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>足迹生成服务 | 诏预 - SaintIC开放平台</title>
+    <link href="//cdn.bootcss.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
+    <link href="//static.saintic.com/cdn/iconfont/iconfont.css" rel="stylesheet" type="text/css">
+    <link href="//static.saintic.com/cdn/images/favicon-32.png" rel="icon" type="image/x-icon" />
+    <link href="//static.saintic.com/cdn/images/favicon-32.png" rel="shortcut icon" type="image/x-icon" />
+    <style>
+        body {
+            padding-top: 0px
+        }
+
+        .footer {
+            padding-top: 40px;
+            padding-bottom: 40px;
+            margin-top: 40px;
+            border-top: 1px solid #eee
+        }
+
+        .jumbotron {
+            text-align: center;
+            background-color: transparent
+        }
+
+        .jumbotron .btn {
+            padding: 14px 24px;
+            font-size: 21px
+        }
+
+        .nav-justified {
+            background-color: #eee;
+            border: 1px solid #ccc;
+            border-radius: 5px
+        }
+
+        .nav-justified>li>a {
+            padding-top: 15px;
+            padding-bottom: 15px;
+            margin-bottom: 0;
+            font-weight: 700;
+            color: #777;
+            text-align: center;
+            background-color: #e5e5e5;
+            background-image: -webkit-gradient(linear, left top, left bottom, from(#f5f5f5), to(#e5e5e5));
+            background-image: -webkit-linear-gradient(top, #f5f5f5 0%, #e5e5e5 100%);
+            background-image: linear-gradient(to bottom, #f5f5f5 0%, #e5e5e5 100%);
+            filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#f5f5f5', endColorstr='#e5e5e5', GradientType=0);
+            background-repeat: repeat-x;
+            border-bottom: 1px solid #d5d5d5
+        }
+
+        .nav-justified>.active>a,
+        .nav-justified>.active>a:focus,
+        .nav-justified>.active>a:hover {
+            background-color: #ddd;
+            background-image: none;
+            box-shadow: inset 0 3px 7px rgba(0, 0, 0, .15)
+        }
+
+        .nav-justified>li:first-child>a {
+            border-radius: 5px 5px 0 0
+        }
+
+        .nav-justified>li:last-child>a {
+            border-bottom: 0;
+            border-radius: 0 0 5px 5px
+        }
+
+        @media (min-width:768px) {
+            .nav-justified {
+                max-height: 52px
+            }
+
+            .nav-justified>li>a {
+                border-right: 1px solid #d5d5d5;
+                border-left: 1px solid #fff
+            }
+
+            .nav-justified>li:first-child>a {
+                border-left: 0;
+                border-radius: 5px 0 0 5px
+            }
+
+            .nav-justified>li:last-child>a {
+                border-right: 0;
+                border-radius: 0 5px 5px 0
+            }
+        }
+
+        @media screen and (min-width:768px) {
+
+            .footer,
+            .marketing,
+            .masthead {
+                padding-right: 0;
+                padding-left: 0
+            }
+        }
+
+        .form-horizontal input {
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        .modal-body {
+            font-size: 12px;
+        }
+
+        input[type="radio"],input[type="checkbox"] {
+            margin: -3 -3 0 0;
+            *margin-top: 0;
+            /* IE7 */
+            margin-top: -3px \9;
+            /* IE8-9 */
+            line-height: normal;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <div class="masthead">
+            <h2><i class="saintic-icon saintic-icon-footprint saintic-icon-1-5"></i>去过的足迹</h2>
+            <h5 class="text-muted">记录你们去过的地方，生成爱的足迹</h5>
+
+            <nav>
+                <ul class="nav nav-justified">
+                    <li><a href="/">返回首页</a></li>
+                    <li><a href="https://blog.saintic.com">博客</a></li>
+                    <li><a href="https://www.saintic.com">主站</a></li>
+                    <li><a href="https://github.com/flask-pluginkit/flask-pluginkit-footprint">Github</a></li>
+                </ul>
+            </nav>
+        </div>
+
+        <div class="row" style='margin-top:20px'>
+            <div class="col-md-6">
+                <p class="alert alert-success">每次行程内部，两个目的地（城市 景点）以空格间隔</p>
+                <form class="form-horizontal">
+
+                    <input id='title-input' type="text" class='form-control' value='我们携手走过的地方' placeholder='请输入主标题' title="请输入主标题">
+                    <input id='sub-input' type="text" class='form-control' value='执子之手与子偕老' placeholder='请输入副标题' title="请输入副标题">
+
+                    <button type='button' id='add-btn' class="btn btn-success">
+                        添加行程
+                    </button>
+                    <button type='button' id="fresh-btn" class='btn btn-success pull-right'>查看效果</button>
+                    <input type="text" class='form-control router' value='北京 上海 杭州 北京' placeholder='比如“北京 上海 杭州 北京”'>
+                    <button id='output-btn' type="button" class="btn btn-success btn-lg btn-block">导出代码</button>
+                    <button type="button" class="btn btn-success btn-lg btn-block" data-toggle="modal" data-target="#mp_love_modal">生成专属页</button>
+                </form>
+
+            </div>
+            <div class="col-md-6" id='main' style="height:500px;"></div>
+        </div>
+    </div>
+    <div class="modal fade" id="codeModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="myModalLabel">复制下面的内容到html文件里即可</h4>
+                </div>
+                <div class="modal-body">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Small modal -->
+    <div class="modal fade bs-example-modal-sm" tabindex="-1" role="dialog" aria-labelledby="mySmallModalLabel" id="mp_love_modal">
+        <div class="modal-dialog modal-sm" role="document" style="width: 400px;">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="exampleModalLabel">生成专属页</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="alert alert-success" role="alert">
+                        温馨提示：
+                        <p>您可以输入任何形式的专属称号（但是推荐使用英文标识以正常使用短网址），程序会生成一个<code>专属称号.love</code>的网页！</p>
+                    </div>
+                    <form>
+                        <div class="form-group">
+                            <label for="mf_love_name" class="control-label">请输入您的专属称号：</label>
+                            <input type="text" class="form-control" id="mf_love_name" required>
+                        </div>
+                        <div class="checkbox">
+                            <label><input type="checkbox" id="my_love_name_shorturl" checked> 生成短网址</label>
+                        </div>
+                    </form>
+                    <div id="mp_love_modal_tip"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="publish-fp-love">生成</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script id='pageTpl' type='text/template'>&lt;!DOCTYPE html&gt;
+&lt;head&gt;
+    &lt;meta charset="utf-8"&gt;
+    &lt;title&gt;<%=obj.title%>&lt;/title&gt;
+    &lt;style&gt;html{background:rgb(27,27,27);padding:0;overflow:hidden}&lt;/style&gt;
+    &lt;link href=&quot;https://static.saintic.com/cdn/images/favicon-32.png&quot; rel=&quot;icon&quot; type=&quot;image/x-icon&quot;/&gt;
+    &lt;link href=&quot;https://static.saintic.com/cdn/images/favicon-32.png&quot; rel=&quot;shortcut icon&quot; type=&quot;image/x-icon&quot;/&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;div id="main"&gt;&lt;/div&gt;
+    &lt;script src="https://cdn.bootcss.com/echarts/2.2.7/echarts-all.js"&gt;&lt;/script&gt;
+    &lt;script type="text/javascript"&gt;
+        var worldMapContainer = document.getElementById('main');
+        var resizeWorldMapContainer = function() {
+            worldMapContainer.style.width = window.innerWidth - 100 + 'px';
+            worldMapContainer.style.height = window.innerHeight - 100 + 'px';
+        };
+        resizeWorldMapContainer();    
+        var myChart = echarts.init(worldMapContainer);
+        var option = <%=obj.option%>;
+        myChart.setOption(option);
+        window.onresize = function() {
+            resizeWorldMapContainer();
+            myChart.resize();
+        };
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;</script>
+
+    <script src="//cdn.bootcss.com/jquery/2.1.4/jquery.min.js"></script>
+    <script src="//cdn.bootcss.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script src="//cdn.bootcss.com/underscore.js/1.8.3/underscore-min.js"></script>
+    <script src="//cdn.bootcss.com/echarts/2.2.7/echarts-all.js"></script>
+    <script>
+        //HTML反转义
+        function HTMLDecode(text) {
+            var temp = document.createElement("div");
+            temp.innerHTML = text;
+            var output = temp.innerText || temp.textContent;
+            temp = null;
+            return output;
+        }
+
+        //Echart地图生成
+        function FootPrint(opt) {
+            this.key = '{{ FOOTPRINT_KEY }}';
+            this.url = 'https://api.map.baidu.com/geocoder/v2/?output=json&ak=' + this.key + '&address=';
+            this.addbtn = $('#add-btn');
+            this.freshbtn = $('#fresh-btn');
+            this.outbtn = $('#output-btn');
+            this.makefpbtn = $('#publish-fp-love')
+            this.chart = echarts.init(document.getElementById('main'));
+            this.tmpl = $('#pageTpl').html();
+            this.clearCache();
+            this.option = {
+                backgroundColor: '#1b1b1b',
+                color: ['gold', 'aqua', 'lime'],
+                title: {
+                    text: '',
+                    subtext: '',
+                    x: 'center',
+                    textStyle: {
+                        color: '#fff'
+                    }
+                },
+                tooltip: {
+                    trigger: 'item',
+                    formatter: '{b}'
+                },
+                dataRange: {
+                    show: false,
+                    min: 0,
+                    max: 100,
+                    calculable: true,
+                    color: ['#ff3333', 'orange', 'yellow', 'lime', 'aqua'],
+                    textStyle: {
+                        color: '#fff'
+                    }
+                },
+                series: [{
+                    name: '全国',
+                    type: 'map',
+                    roam: true,
+                    hoverable: false,
+                    mapType: 'china',
+                    itemStyle: {
+                        normal: {
+                            borderColor: 'rgba(100,149,237,1)',
+                            borderWidth: 0.5,
+                            areaStyle: {
+                                color: '#1b1b1b'
+                            }
+                        }
+                    },
+                    data: [],
+
+                    geoCoord: []
+                }, {
+                    name: '足迹',
+                    type: 'map',
+                    mapType: 'china',
+                    data: [],
+                    markLine: {
+                        smooth: true,
+                        effect: {
+                            show: true,
+                            scaleSize: 1,
+                            period: 30,
+                            color: '#fff',
+                            shadowBlur: 10
+                        },
+                        itemStyle: {
+                            normal: {
+                                borderWidth: 1,
+                                lineStyle: {
+                                    type: 'solid',
+                                    shadowBlur: 10
+                                },
+                                label: {
+                                    show: false
+                                },
+
+                            }
+                        },
+
+                        data: []
+                    },
+                    markPoint: {
+                        symbol: 'emptyCircle',
+                        symbolSize: function (v) {
+                            return 10 + v / 10
+                        },
+                        effect: {
+                            show: true,
+                            shadowBlur: 0
+                        },
+                        itemStyle: {
+                            normal: {
+                                label: {
+                                    show: false
+                                }
+                            },
+                            emphasis: {
+                                label: {
+                                    position: 'top'
+                                }
+                            }
+                        },
+                        data: []
+                    }
+                }]
+            };
+        }
+
+        //隐藏生成专属页面的modal后将提示清空
+        $('#mp_love_modal').on('hidden.bs.modal', function (e) {
+            $('#mp_love_modal_tip').html('');
+        });
+
+        $.extend(FootPrint.prototype, {
+            bindEvent: function () {
+                var that = this;
+                //添加新行程
+                that.addbtn.on('click', function () {
+                    that.outbtn.before(
+                        '<input type="text" placeholder="请输入行程，多个地点之间用空格间隔" class="form-control router">'
+                    )
+                })
+                $.ajaxSettings.async = false;
+                //导出代码
+                that.outbtn.on('click', function () {
+                    var obj = {
+                        title: that.title,
+                        option: JSON.stringify(that.option)
+                    };
+                    pageCode = _.template(that.tmpl)(obj);
+                    $('#codeModal').modal('show').find('.modal-body').html(pageCode);
+                });
+                //生成专属页面
+                that.makefpbtn.on('click', function () {
+                    //专属名和是否生成短网址
+                    var mf_love_name = $('#mf_love_name').val(),
+                        my_love_name_shorturl = $("#my_love_name_shorturl").prop("checked");
+                    if (!mf_love_name) {
+                        $('#mp_love_modal_tip').html('<p class="text-danger">请输入专属称号</p>');
+                        return false;
+                    }
+                    var obj = {
+                        title: that.title,
+                        option: JSON.stringify(that.option)
+                    };
+                    pageCode = _.template(that.tmpl)(obj);
+                    $.ajax({
+                        type: "post",
+                        contentType: "application/json;charset=UTF-8",
+                        url: "{{ url_for('footprint.make_love') }}",
+                        data: JSON.stringify({"name":mf_love_name, "html":HTMLDecode(pageCode)}),
+                        dataType: "json",
+                        success: function(res){
+                            if (res.code === 0) {
+                                var msg = '<p class="text-success">制作成功！</p><p>专属页：<a href="' + res.long_url + '" target="_blank">' + res.long_url + '</a></p>';
+                                if (my_love_name_shorturl === true) {
+                                    $.ajax({
+                                        type: "post",
+                                        url: "https://satic.io/api/v1/?Action=shorten",
+                                        data: {"long_url": res.long_url, "jid": res.name + ".love"},
+                                        dataType: "json",
+                                        success: function(resp) {
+                                            if (resp.code === 0) {
+                                                msg += '<p>专属短网址：<a href="' + resp.data.short_url + '" target="_blank">' + resp.data.short_url + '</a></p>';
+                                            } else {
+                                                msg += '<p>专属短网址生成失败（' + resp.msg + '），您可在<a href="https://satic.io" target="_blank">satic.io</a>自行定制。</p>'
+                                            }
+                                        },
+                                        error: function() {
+                                            msg += '<p>专属短网址生成失败，您可在<a href="https://satic.io" target="_blank">satic.io</a>自行定制。</p>'
+                                        }
+                                    });
+                                }
+                                $('#mp_love_modal_tip').html(msg);
+                            } else {
+                                $('#mp_love_modal_tip').html('<p class="text-warning">制作失败！' + res.msg + '</p>');
+                            }
+                        },
+                        error: function(e) {
+                            $('#mp_love_modal_tip').html('<p class="text-danger">服务器错误</p>');
+                        }
+                    });
+                });
+                //重新查看效果
+                that.freshbtn.on('click', function () {
+                    that.clearCache();
+                    that.getInputVal();
+                    that.title = $('#title-input').val() || '我们携手走过的地方';
+                    that.subtitle = $('#sub-input').val() || '执子之手与子偕老';
+                    var size = _.size(that.cache);
+                    // console.log(that.foot);
+                    var tmp = [];
+                    $.each(that.cache, function (key, val) {
+                        // that.cacheArr.push(key);
+                        $.getJSON(that.url + key + '&callback=?', function (res) {
+                            if (res.result) {
+                                var loc = res.result.location;
+                                that.alldata[key] = [loc.lng, loc.lat];
+                                that.pointdata.push({
+                                    'name': key
+                                });
+                                if (_.size(that.alldata) == size) {
+                                    that.initPage();
+                                };
+                            };
+                        });
+                    })
+                }).trigger('click');
+            },
+            initPage: function () {
+                var that = this
+                $.each(that.foot, function (i, v) {
+                    tmp = v.split(' ')
+                    for (var i = 0; i < tmp.length - 1; i++) {
+                        that.linedata.push([{
+                            'name': tmp[i]
+                        }, {
+                            'name': tmp[i + 1]
+                        }])
+                    };
+                })
+                // console.log(that.option.series)
+                that.option.title.text = that.title
+                that.option.title.subtext = that.subtitle
+                that.option.series[0].geoCoord = that.alldata
+                that.option.series[1].markLine.data = that.linedata
+                that.option.series[1].markPoint.data = that.pointdata
+                that.chart.setOption(that.option, true);
+            },
+            getInputVal: function () {
+                var that = this
+                that.foot = []
+                $('input.router').each(function (i, v) {
+                    var val = $(v).val()
+                    if (val) {
+                        $.each(val.split(' '), function (j, s) {
+                            that.cache[s] = true
+                        })
+                        that.foot.push(val)
+                    };
+                })
+            },
+            clearCache: function () {
+                this.foot = []
+                // all data
+                this.cache = {}
+                this.alldata = {}
+                this.linedata = []
+                this.pointdata = []
+
+            },
+            init: function () {
+                this.bindEvent()
+                $('.masthead a').attr('target', '_blank')
+            }
+
+        })
+        $(function () {
+            var foot = new FootPrint()
+            foot.init()
+        });
+    </script>
+
+</body>
+
+</html>
