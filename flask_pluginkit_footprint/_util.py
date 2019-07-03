@@ -19,7 +19,7 @@ class Storage():
             self._storage = RedisStorage(redis_url, redis_connection)
         else:
             self._storage = LocalStorage()
-        self._storage = "flask_pluginkit_footprint"
+        self._storage.index = "flask_pluginkit_footprint"
 
     def gen_key(self, unique_name):
         if unique_name:
