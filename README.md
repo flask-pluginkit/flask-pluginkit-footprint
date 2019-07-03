@@ -27,6 +27,8 @@
 
 此插件依赖[Flask-PluginKit](https://github.com/staugur/flask-pluginkit "Flask-PluginKit")，使用时请在初始化PluginManager时传入plugin_packages参数(类型list)，加上"flask_pluginkit_footprint"！
 
+插件包含一个蓝图，路由前缀是`/footprint`；包含两个tep导航，不过是针对性的，如果需要访问插件首页，可以使用`url_for('footprint.index')`
+
 参考文档：[Flask-PluginKit third-party-plugin](https://flask-pluginkit.readthedocs.io/zh_CN/latest/#third-party-plugin "third-party-plugin")
 
 ### 感谢
