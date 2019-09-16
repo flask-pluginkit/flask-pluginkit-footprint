@@ -107,3 +107,10 @@ class PluginFootprintMain(object):
 
     def register_tep(self):
         return dict(openservice_navigation='footprint/nav.html', index_openservice_navigation='footprint/nav_index.html')
+
+#: 兼容新版Flask-PluginKit
+def register():
+    return dict(
+        bep=PluginFootprintMain().register_bep(),
+        tep=PluginFootprintMain().register_tep()
+    )
